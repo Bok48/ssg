@@ -5,6 +5,8 @@ from textnode import (
     TextNode,
     text_node_to_html_node,
     split_nodes_delimiter,
+    extract_markdown_images,
+    extract_markdown_links,
 )
 
 
@@ -160,8 +162,52 @@ class TestTextNode(unittest.TestCase):
         ]
         self.assertEqual(new_nodes, expected_nodes)
 
+    
+    # extract_markdown_images
+    def test_extract_image(self):
+        result = extract_markdown_images(
+            "This is text with an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        expected_result = [("image", "https://i.imgur.com/zjjcJKZ.png")]
+        self.assertEqual(result, expected_result)
+
+    def test_extract_three_images(self):
+        result = extract_markdown_images(
+            "This is text with three images: ![image](https://i.imgur.com/zjjcJKZ.png), ![image2](http://localhost:8888), ![image3](http://localhost:8889)"
+        )
+        expected_result = [("image", "https://i.imgur.com/zjjcJKZ.png"), ("image2", "http://localhost:8888"), ("image3", "http://localhost:8889")]
+        self.assertEqual(result, expected_result)
+
+    def test_extract_among_link(self):
+        result = extract_markdown_images(
+            "This is text with two images: ![image](https://i.imgur.com/zjjcJKZ.png), [link](http://localhost:8888), ![image2](http://localhost:8889/somewhere/image.jpg)"
+        )
+        expected_result = [("image", "https://i.imgur.com/zjjcJKZ.png"), ("image2", "http://localhost:8889/somewhere/image.jpg")]
+        self.assertEqual(result, expected_result)
 
         
+    # extract_markdown_links
+    def test_extract_link(self):
+        result = extract_markdown_links(
+            "This is text with a [link](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        expected_result = [("link", "https://i.imgur.com/zjjcJKZ.png")]
+        self.assertEqual(result, expected_result)
+
+    def test_extract_three_links(self):
+        result = extract_markdown_links(
+            "This is text with three links: [link](https://i.imgur.com/zjjcJKZ.png), [link2](http://localhost:8888), [link3](http://localhost:8889)"
+        )
+        expected_result = [("link", "https://i.imgur.com/zjjcJKZ.png"), ("link2", "http://localhost:8888"), ("link3", "http://localhost:8889")]
+        self.assertEqual(result, expected_result)
+
+    def test_extract_among_images(self):
+        result = extract_markdown_links(
+            "This is text with one link: ![image](https://i.imgur.com/zjjcJKZ.png), [link](http://localhost:8888), ![image2](http://localhost:8889/somewhere/image.jpg)"
+        )
+        expected_result = [("link", "http://localhost:8888")]
+        self.assertEqual(result, expected_result)
+
 
 
 if __name__ == "__main__":
