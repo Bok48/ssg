@@ -4,6 +4,7 @@ from textnode import (
     TextType,
     TextNode,
     text_node_to_html_node,
+    split_nodes_delimiter,
 )
 
 
@@ -92,6 +93,74 @@ class TestTextNode(unittest.TestCase):
         self.assertEqual(html_node.tag, "img")
         self.assertEqual(html_node.value, None)
         self.assertEqual(html_node.props, {'src': "http://localhost:8888", 'alt': "This is an image node"})
+
+    
+    # split_nodes_delimiter
+    def test_split_delimiter_from_bold(self):
+        node = TextNode("This is bold text.", TextType.BOLD)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected_nodes = [
+            TextNode("This is bold text.", TextType.BOLD)
+        ]
+        self.assertEqual(new_nodes, expected_nodes)
+
+    def test_split_delimiter_bold(self):
+        node = TextNode("This is text with a **bold** word.", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected_nodes = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("bold", TextType.BOLD),
+            TextNode(" word.", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected_nodes)
+
+    def test_split_delimiter_bold_start(self):
+        node = TextNode("**This** is text with a bold word.", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        expected_nodes = [
+            TextNode("This", TextType.BOLD),
+            TextNode(" is text with a bold word.", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected_nodes)
+        
+
+    def test_split_delimiter_italic_end(self):
+        node = TextNode("This is text with _italic text._", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "_", TextType.ITALIC)
+        expected_nodes = [
+            TextNode("This is text with ", TextType.TEXT),
+            TextNode("italic text.", TextType.ITALIC),
+        ]
+        self.assertEqual(new_nodes, expected_nodes)
+
+    def test_split_delimiter_code_full_text(self):
+        node = TextNode("```This is all code```", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "```", TextType.CODE)
+        expected_nodes = [
+            TextNode("This is all code", TextType.CODE),
+        ]
+        self.assertEqual(new_nodes, expected_nodes)
+
+    def test_split_delimiter_node_list(self):
+        nodes = [
+            TextNode("This is text with _italic_ text.", TextType.TEXT),
+            TextNode("Bold text", TextType.BOLD),
+            TextNode("This is _italic text._", TextType.TEXT),
+            TextNode("This is normal text", TextType.TEXT),
+        ]
+        new_nodes = split_nodes_delimiter(nodes, "_", TextType.ITALIC)
+        expected_nodes = [
+            TextNode("This is text with ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" text.", TextType.TEXT),
+            TextNode("Bold text", TextType.BOLD),
+            TextNode("This is ", TextType.TEXT),
+            TextNode("italic text.", TextType.ITALIC),
+            TextNode("This is normal text", TextType.TEXT),
+        ]
+        self.assertEqual(new_nodes, expected_nodes)
+
+
         
 
 
