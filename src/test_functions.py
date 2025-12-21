@@ -1,6 +1,8 @@
 import unittest
 from functions import (
+    BlockType,
     markdown_to_blocks,
+    block_to_block_type,
 )
 
 class TestFunctions(unittest.TestCase):
@@ -53,3 +55,42 @@ Some other text
             "Some other text",
         ]
         self.assertEqual(result, expected_result)
+
+    
+    # block_to_block_type
+    def test_block_to_paragraph(self):
+        block = "This is a paragraph of text in markdown"
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.PARAGRAPH)
+
+    def test_block_to_heading(self):
+        block = "## This is a h2 heading in markdown"
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.HEADING)
+
+    def test_block_to_code(self):
+        block = "```This is a block of code in markdown```"
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.CODE)
+
+    def test_block_to_quote(self):
+        block = """>This is a quote block in markdown.
+>Every line starts with a '>' symbol.
+"""
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.QUOTE)
+    
+    def test_block_to_unordered_list(self):
+        block = """- This is an unordered list.
+- Every line must start with a '-' symbol followed by a space.        
+"""
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.UNORDERED_LIST)
+    
+    def test_block_to_ordered_list(self):
+        block = """1. This is an ordered list.
+2. Every line must start with a number, followed by a '.' and a space.
+"""
+        result = block_to_block_type(block)
+        self.assertEqual(result, BlockType.ORDERED_LIST)
+
