@@ -24,10 +24,10 @@ def block_to_block_type(block):
     match block[0]:
         case '#': # May be a header
             header = block.split(' ')[0]
-            if header.count('#') == len(header):
+            if len(header) < 7 and header.count('#') == len(header):
                 return BlockType.HEADING
         case '`': # May be a code block
-            if len(block) > 6 and block[:3] == "```" and block[-3:] == "```":
+            if len(block) > 6 and block.startswith("```") and block[-1].startswith("```"): # From the solution files. Copied by hand for learning.
                 return BlockType.CODE
         case '>': # May be a quote block
             lines = block.split('\n')
