@@ -55,3 +55,17 @@ def block_to_block_type(block):
                 return BlockType.ORDERED_LIST
         
     return BlockType.PARAGRAPH # Default BlockType if no other match
+
+# Takes a full markdown document and converts it to a single parent HTMLNode,
+# with relevant child nodes nested inside.
+def markdown_to_html_node(markdown):
+    md_blocks = markdown_to_blocks(markdown)
+    for block in md_blocks:
+        block_type = block_to_block_type(block)
+        # Create HTMLNode with proper data based on type
+
+        # Assign proper child (HTMLNode) objects to the block node
+
+        # Code block should not do any inline markdown parsing of children
+    # Make all block nodes children under a single parent HTMLNode (div) and return
+    return None
