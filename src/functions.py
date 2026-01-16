@@ -1,5 +1,16 @@
 from enum import Enum
 
+from textnode import (
+    TextType,
+    TextNode,
+    text_to_textnodes,
+    text_node_to_html_node,
+)
+from htmlnode import (
+    ParentNode,
+    LeafNode,
+)
+
 class BlockType(Enum):
     PARAGRAPH = "paragraph"
     HEADING = "heading"
@@ -27,7 +38,7 @@ def block_to_block_type(block):
             if len(header) < 7 and header.count('#') == len(header):
                 return BlockType.HEADING
         case '`': # May be a code block
-            if len(block) > 6 and block.startswith("```") and block[-1].startswith("```"): # From the solution files. Copied by hand for learning.
+            if len(block) > 6 and block[:3] == "```" and block[-3:] == "```":
                 return BlockType.CODE
         case '>': # May be a quote block
             lines = block.split('\n')
@@ -56,16 +67,49 @@ def block_to_block_type(block):
         
     return BlockType.PARAGRAPH # Default BlockType if no other match
 
-# Takes a full markdown document and converts it to a single parent HTMLNode,
+# Takes a full markdown document and converts it to a single parent HTMLNode
 # with relevant child nodes nested inside.
 def markdown_to_html_node(markdown):
     md_blocks = markdown_to_blocks(markdown)
+    children = []
     for block in md_blocks:
-        block_type = block_to_block_type(block)
+        children.append(block_to_html_node(block))
         # Create HTMLNode with proper data based on type
 
         # Assign proper child (HTMLNode) objects to the block node
 
         # Code block should not do any inline markdown parsing of children
+        # add child node to children list
     # Make all block nodes children under a single parent HTMLNode (div) and return
-    return None
+    parent_node = ParentNode("div", children)
+    return parent_node
+
+# Takes markdown block, returns new HTMLNode with the data
+def block_to_html_node(block):
+    block_type = block_to_block_type(block)
+    match block_type:
+        case BlockType.PARAGRAPH:
+            children = []
+            text = block.replace('\n', ' ')
+            textnodes = text_to_textnodes(text)
+            for textnode in textnodes:
+                children.append(text_node_to_html_node(textnode))
+            htmlnode = ParentNode('p', children)
+            return htmlnode
+        #case BlockType.HEADING:
+        case BlockType.CODE:
+            htmlnode = code_block_to_html_node(block)
+            return htmlnode
+        #case BlockType.QUOTE:
+        #case BlockType.UNORDERED_LIST:
+        #case BlockType.ORDERED_LIST:
+    return children
+
+## Helper functions for block_to_html_node
+def code_block_to_html_node(block):
+    block = block.strip("`")
+    block = block.lstrip('\n')
+    textnode = TextNode(block, TextType.CODE)
+    codenode = text_node_to_html_node(textnode) # LeafNode with code text
+    htmlnode = ParentNode("pre", [codenode]) # ParentNode with code node as child and pre tag for html
+    return htmlnode
