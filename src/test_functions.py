@@ -25,6 +25,7 @@ This is a paragraph of text. It has some **bold** and _italic_ words inside of i
             "This is a paragraph of text. It has some **bold** and _italic_ words inside of it.",
             "- This is the first list item in a list block\n- This is a list item\n- This is another list item"
         ]
+        self.assertEqual(result, expected_result)
 
     def test_markdown_spaces(self):
         md = """
