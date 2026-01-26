@@ -135,7 +135,7 @@ def quote_block_to_html_node(block):
     textnodes = text_to_textnodes(lines)
     for textnode in textnodes:
         children.append(text_node_to_html_node(textnode))
-    htmlnode = ParentNode('q', children)
+    htmlnode = ParentNode('blockquote', children)
     return htmlnode
 
 def unordered_list_block_to_html_node(block):
