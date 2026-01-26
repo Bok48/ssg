@@ -1,4 +1,4 @@
-from extract_markdown import(
+from generate_page import(
     generate_page,
 )
 from copy_source import (
