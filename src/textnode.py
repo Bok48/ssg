@@ -43,7 +43,7 @@ def text_node_to_html_node(text_node):
             return LeafNode("a", text_node.text, link_dict)
         case TextType.IMAGE:
             image_dict = {'src': text_node.url, 'alt': text_node.text}
-            return LeafNode("img", None, image_dict)
+            return LeafNode("img", "", image_dict)
         case _:
             raise ValueError(f"Text type {text_node.text_type.value} is not usable")
 
