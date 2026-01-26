@@ -19,11 +19,11 @@ def generate_page(from_path, template_path, dest_path):
     file_title = extract_title(source_file_contents)
     template_file_contents = template_file_contents.replace("{{ Title }}", file_title)
     template_file_contents = template_file_contents.replace("{{ Content }}", source_file_contents)
-    print(f"Generated_file: {template_file_contents}")
-    os.makedirs(dest_path)
+    current_dest_path = os.path.dirname(dest_path)
+    if not os.path.exists(current_dest_path):
+        os.makedirs(current_dest_path)
     with open(dest_path, 'w') as f:
         f.write(template_file_contents)
-        print(f"Page {dest_path} generated")
 
     
 
