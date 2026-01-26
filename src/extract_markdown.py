@@ -24,6 +24,7 @@ def generate_page(from_path, template_path, dest_path):
         os.makedirs(current_dest_path)
     with open(dest_path, 'w') as f:
         f.write(template_file_contents)
+    print(f"Generated_file: {dest_path}")
 
     
 
